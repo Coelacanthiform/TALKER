@@ -2,6 +2,7 @@ package.path = package.path .. ";./bin/lua/?.lua;"
 local logger = require("framework.logger")
 local game = require("infra.game_adapter")
 local trigger = require("interface.trigger")
+local queries = talker_game_queries
 local mcm = talker_mcm
 
 local script_name = "TALKER Trigger Sleep"
