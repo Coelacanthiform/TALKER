@@ -189,6 +189,15 @@ function on_mcm_load()
                 spacing = 20
             },
             {
+                id = "dialogue_display_length",
+                type = "input",
+                val = 2,
+                min = 1,
+                max = 20,
+                step = 1,
+                def = 8,
+            },
+            {
                 id = "action_descriptions",
                 type = "check",
                 val = 1,
@@ -370,6 +379,7 @@ local defaults = {
     ["recent_speech_threshold"] = 120,
     ["idle_question_chance"] = 0.5,
     ["injury_cooldown"] = 20,
+    ["injury_threshold"] = 0.4,
     ["reload_notice_chance"] = 0.1,
     ["task_cooldown"] = 15,
     ["task_notice_chance"] = 0.1,
