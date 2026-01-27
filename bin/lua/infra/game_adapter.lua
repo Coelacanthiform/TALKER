@@ -105,10 +105,10 @@ function m.create_character(game_object_person)
 	if m.is_player(game_id) then
 		local disguise_status = m.get_player_disguise_status()
 		if disguise_status and disguise_status.is_disguised then
-			log.info(
-				"Player is disguised. Using TRUE faction for event logging: "
+			log.spam(
+				"Player is disguised. True faction:"
 					.. disguise_status.true_faction
-					.. " instead of visual: "
+					.. ", disguised as: "
 					.. disguise_status.visual_faction
 			)
 			raw_faction = disguise_status.true_faction
@@ -122,11 +122,8 @@ function m.create_character(game_object_person)
 		raw_reputation = game_object_person:character_reputation()
 	end
 	local reputation_tier = query.get_reputation_tier(raw_reputation) or "none"
-	local weapon = query.get_weapon(game_object_person)
-	local weapon_description = nil
-	if weapon then
-		weapon_description = query.get_item_description(weapon)
-	end
+	local weapon_description, weapon_status = query.get_weapon_info(game_object_person)
+
 	log.spam(
 		"creating character with id: "
 			.. game_id
@@ -139,7 +136,16 @@ function m.create_character(game_object_person)
 			.. ", reputation: "
 			.. reputation_tier
 	)
-	return Character.new(game_id, name, experience, faction, reputation_tier, weapon_description, visual_faction)
+	return Character.new(
+		game_id,
+		name,
+		experience,
+		faction,
+		reputation_tier,
+		weapon_description,
+		visual_faction,
+		weapon_status
+	)
 end
 
 function m.get_player_weapon()
