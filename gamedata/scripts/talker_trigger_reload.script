@@ -6,6 +6,7 @@ package.path = package.path .. ";./bin/lua/?.lua;"
 local log = require("framework.logger")
 local game = require("infra.game_adapter")
 local trigger = require("interface.trigger")
+local queries = talker_game_queries
 local mcm = talker_mcm
 ----------------------------------------------------------------------------------------------------
 -- Constants
