@@ -783,7 +783,11 @@ function prompt_builder.create_dialogue_request_prompt(speaker, memory_context)
 			reputation_text = " \n### CURRENT REPUTATION: " .. speaker.reputation .. "."
 		end
 		if speaker.weapon and speaker.weapon ~= "" then
-			weapon_info = " \n### CURRENT WEAPON: You are wielding a " .. speaker.weapon .. " \n"
+			if speaker.weapon_status == "holstered" then
+				weapon_info = " \n### CURRENT WEAPON: You are carrying a holstered " .. speaker.weapon .. " \n"
+			else
+				weapon_info = " \n### CURRENT WEAPON: You are wielding a " .. speaker.weapon .. " \n"
+			end
 		else
 			weapon_info = " \n### CURRENT WEAPON: You are not wielding a weapon \n"
 		end
@@ -917,7 +921,7 @@ function prompt_builder.create_dialogue_request_prompt(speaker, memory_context)
 	-- Use the world_context of the most recent event to get the current location
 	local world_context = ""
 	if #new_events > 0 and new_events[#new_events].world_context then
-		world_context = "### CURRENT LOCATION:\n" .. new_events[#new_events].world_context .. "\n"
+		world_context = "### LOCATION:\n" .. new_events[#new_events].world_context .. "\n"
 	end
 	-- Special rules for specific locations
 	-- Cordon Truce logic moved to world_state.lua
@@ -929,10 +933,22 @@ function prompt_builder.create_dialogue_request_prompt(speaker, memory_context)
 		local characters_near = game.get_characters_near(speaker_obj, (mcm.get("witness_distance")))
 		local characters_near_list = {}
 		for _, char in ipairs(characters_near) do
-			table.insert(
-				characters_near_list,
-				char.name .. " (" .. char.experience .. " " .. char.faction .. ", " .. char.reputation .. " rep)"
-			)
+			local char_desc = char.name
+				.. " ("
+				.. char.experience
+				.. " "
+				.. char.faction
+				.. ", "
+				.. char.reputation
+				.. " rep"
+			if char.weapon and char.weapon ~= "" then
+				if char.weapon_status == "holstered" then
+					char_desc = char_desc .. ", holstered " .. char.weapon
+				else
+					char_desc = char_desc .. ", wielding a " .. char.weapon
+				end
+			end
+			table.insert(characters_near_list, char_desc .. ")")
 		end
 		local characters_near_str = table.concat(characters_near_list, ", ")
 		if characters_near_str ~= "" then
@@ -990,7 +1006,7 @@ function prompt_builder.create_dialogue_request_prompt(speaker, memory_context)
 	end
 
 	if scene_context ~= "" then
-		table.insert(messages, system_message("## SCENE CONTEXT:\n\n" .. scene_context))
+		table.insert(messages, system_message("## CURRENT SCENE:\n\n<SCENE>" .. scene_context .. "</SCENE>"))
 	end
 
 	table.insert(messages, system_message("</CONTEXT>\n\n"))
