@@ -153,6 +153,9 @@
     <string id="ui_mcm_talker_general_configuration_title">
         <text>General Configuration</text>
     </string>
+    <string id="ui_mcm_talker_dialogue_display_length">
+        <text>Dialogue message display length (seconds)</text>
+    </string>
     <string id="ui_mcm_talker_action_descriptions">
         <text>Allow the AI to use action descriptions (e.g., *chuckles* or (sighs) etc.).</text>
     </string>
