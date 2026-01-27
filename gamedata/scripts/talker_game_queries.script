@@ -219,40 +219,34 @@ end
 function get_weapon_info(npc)
     must_exist(npc, "get_weapon_info")
     
-    -- Check unstrapped state
+    local active_item = try(npc.active_item, npc)
+    local best_weapon = try(npc.best_weapon, npc)
     local is_unstrapped = try(npc.weapon_unstrapped, npc)
     
-    local weapon_str = nil
-    local state = nil
+    -- Pick the best available weapon object. For the player, active_item is primary.
+    local weapon_obj = (active_item and is_weapon(active_item)) and active_item or best_weapon
     
-    -- Get best weapon (the one they would use)
-    local best_weapon = try(npc.best_weapon, npc)
-    -- Get active item (what is in hands)
-    local active_item = try(npc.active_item, npc)
+    if not weapon_obj then
+        return nil, nil
+    end
     
+    local weapon_str = get_item_description(weapon_obj)
+    local state = "holstered"
+    
+    -- Determine state (wielding/holstered)
     if is_unstrapped == true then
-         -- Wielding
-         local weapon_obj = (active_item and is_weapon(active_item)) and active_item or best_weapon
-         if weapon_obj then
-             weapon_str = get_item_description(weapon_obj)
-             state = "wielding"
-         end
-    elseif is_unstrapped == false then
-         -- Holstered (explicitly false)
-         if best_weapon then
-             weapon_str = get_item_description(best_weapon)
-             state = "holstered"
-         end
-    else
-         -- is_unstrapped returned nil (function missing or error)
-         -- Fallback to active_item check
-         if active_item and is_weapon(active_item) then
-             weapon_str = get_item_description(active_item)
-             state = "wielding"
-         elseif best_weapon then
-             weapon_str = get_item_description(best_weapon)
-             state = "holstered"
-         end
+        state = "wielding"
+    elseif is_unstrapped == nil then
+        -- Fallback if engine support is missing
+        if active_item and is_weapon(active_item) then
+            state = "wielding"
+        end
+    end
+    
+    -- Special case for the player: if they have a weapon in hand, it's effectively "wielding"
+    -- even if unstrapped is false (e.g., during a reload animation)
+    if is_player(npc) and active_item and is_weapon(active_item) then
+        state = "wielding"
     end
     
     return weapon_str, state
