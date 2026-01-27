@@ -28,7 +28,7 @@ end
 
 function actor_on_hit_callback(obj, amount, local_direction, who, bone_index)
     if mode_injury == 1 then return end
-    if db.actor.health >= mcm.get("injury_threshold") then return end
+    if db.actor.health >= tonumber(mcm.get("injury_threshold")) then return end
 
     local player = game.get_player_character()
     local attacker = game.create_character(who)
